@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS election_results (
 
 INSERT INTO elections (id, title, description, election_type, start_date, end_date, status)
 VALUES (
-    'd3m0-1234-5678-ab12-cd34ef56gh78',
+    'd3e01234-5678-4a12-8d34-ef56ba789012',
     'Demo: University Student Council 2025',
     'A demonstration election featuring complete profiles, real-time charts, and Antigravity UI.',
     'university',
@@ -164,23 +164,23 @@ VALUES (
 ) ON CONFLICT (id) DO UPDATE SET status = 'completed', title = EXCLUDED.title;
 
 -- Clear old demo candidates to re-insert freshly
-DELETE FROM candidates WHERE election_id = 'd3m0-1234-5678-ab12-cd34ef56gh78';
+DELETE FROM candidates WHERE election_id = 'd3e01234-5678-4a12-8d34-ef56ba789012';
 
 INSERT INTO candidates (id, election_id, name, party, symbol, photo_url, manifesto, position, age, locality, state, district, timings) VALUES
-('c1nd-1111-1111-1111-111111111111', 'd3m0-1234-5678-ab12-cd34ef56gh78', 'Nova Quantum', 'Innovation Party', '🚀', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80', 'Focusing on advanced AI research funding, better UI/UX for all campus systems, and Antigravity tech.', 1, 22, 'Campus North', 'Telangana', 'Karimnagar', '10:00 AM - 4:00 PM'),
-('c2nd-2222-2222-2222-222222222222', 'd3m0-1234-5678-ab12-cd34ef56gh78', 'Dr. Alexander Flux', 'Science First', '⚛️', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80', 'Dedicated to expanding laboratory equipment and establishing new computing clusters.', 2, 24, 'Science Block', 'Telangana', 'Hyderabad', '9:00 AM - 2:00 PM'),
-('c3nd-3333-3333-3333-333333333333', 'd3m0-1234-5678-ab12-cd34ef56gh78', 'Sarah Nebula', 'Traditionalists', '🏛️', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80', 'Ensuring steady and stable growth while maintaining our university core values and heritage.', 3, 21, 'Main Hostels', 'Telangana', 'Warangal', '4:00 PM - 8:00 PM');
+('c1e14111-1111-4111-8111-111111111111', 'd3e01234-5678-4a12-8d34-ef56ba789012', 'Nova Quantum', 'Innovation Party', '🚀', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80', 'Focusing on advanced AI research funding, better UI/UX for all campus systems, and Antigravity tech.', 1, 22, 'Campus North', 'Telangana', 'Karimnagar', '10:00 AM - 4:00 PM'),
+('c2e24222-2222-4222-8222-222222222222', 'd3e01234-5678-4a12-8d34-ef56ba789012', 'Dr. Alexander Flux', 'Science First', '⚛️', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80', 'Dedicated to expanding laboratory equipment and establishing new computing clusters.', 2, 24, 'Science Block', 'Telangana', 'Hyderabad', '9:00 AM - 2:00 PM'),
+('c3e34333-3333-4333-8333-333333333333', 'd3e01234-5678-4a12-8d34-ef56ba789012', 'Sarah Nebula', 'Traditionalists', '🏛️', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80', 'Ensuring steady and stable growth while maintaining our university core values and heritage.', 3, 21, 'Main Hostels', 'Telangana', 'Warangal', '4:00 PM - 8:00 PM');
 
 -- Insert Demo Results
-DELETE FROM election_results WHERE election_id = 'd3m0-1234-5678-ab12-cd34ef56gh78';
+DELETE FROM election_results WHERE election_id = 'd3e01234-5678-4a12-8d34-ef56ba789012';
 INSERT INTO election_results (election_id, candidate_id, vote_count, percentage, is_winner) VALUES
-('d3m0-1234-5678-ab12-cd34ef56gh78', 'c1nd-1111-1111-1111-111111111111', 450, 52.94, true),
-('d3m0-1234-5678-ab12-cd34ef56gh78', 'c2nd-2222-2222-2222-222222222222', 250, 29.41, false),
-('d3m0-1234-5678-ab12-cd34ef56gh78', 'c3nd-3333-3333-3333-333333333333', 150, 17.65, false);
+('d3e01234-5678-4a12-8d34-ef56ba789012', 'c1e14111-1111-4111-8111-111111111111', 450, 52.94, true),
+('d3e01234-5678-4a12-8d34-ef56ba789012', 'c2e24222-2222-4222-8222-222222222222', 250, 29.41, false),
+('d3e01234-5678-4a12-8d34-ef56ba789012', 'c3e34333-3333-4333-8333-333333333333', 150, 17.65, false);
 
 -- Insert Demo Vote Tracking (Total Votes Count in Dashboard requires this)
-DELETE FROM vote_tracking WHERE election_id = 'd3m0-1234-5678-ab12-cd34ef56gh78';
+DELETE FROM vote_tracking WHERE election_id = 'd3e01234-5678-4a12-8d34-ef56ba789012';
 INSERT INTO vote_tracking (election_id, voter_hash)
-SELECT 'd3m0-1234-5678-ab12-cd34ef56gh78', md5(random()::text) FROM generate_series(1, 850);
+SELECT 'd3e01234-5678-4a12-8d34-ef56ba789012', md5(random()::text) FROM generate_series(1, 850);
 
 -- COMPLETE!
