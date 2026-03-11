@@ -150,7 +150,7 @@ VALUES (
 -- Demo Voter (Username: voter, Password: voter)
 INSERT INTO voters (id, full_name, voter_id, email, district, state, photo_url, address, date_of_birth)
 VALUES (
-    'v0t3r111-1111-4111-8111-111111111111',
+    'ba141111-1111-4111-8111-111111111111',
     'Demo Voter (Student)',
     'VTR001',
     'voter@kitssvoting.edu.in',
@@ -163,7 +163,7 @@ VALUES (
 
 INSERT INTO credentials (voter_profile_id, username, password_hash)
 VALUES (
-    'v0t3r111-1111-4111-8111-111111111111',
+    'ba141111-1111-4111-8111-111111111111',
     'voter',
     '$2b$12$fBClN9oAHL4fAwk6VrzlnuGfKVHWqTAQiWL7WWf5hnToq4UFbkCGe'
 );
