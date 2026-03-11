@@ -117,7 +117,8 @@ CREATE TABLE votes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     election_id UUID REFERENCES elections(id) ON DELETE CASCADE,
     encrypted_vote TEXT NOT NULL,
-    cryptographic_hash VARCHAR(255) UNIQUE NOT NULL,
+    vote_hash VARCHAR(255) UNIQUE NOT NULL, -- Matched with backend
+    voter_token VARCHAR(255), -- For receipts
     cast_at TIMESTAMPTZ DEFAULT NOW()
 );
 
