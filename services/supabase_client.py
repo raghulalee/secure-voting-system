@@ -88,7 +88,7 @@ class SupabaseClient:
         return (
             self.client.table("credentials")
             .select("*")
-            .eq("username", username)
+            .ilike("username", username)
             .execute()
         )
 
@@ -129,7 +129,7 @@ class SupabaseClient:
         return (
             self.client.table("admin_users")
             .select("*")
-            .eq("username", username)
+            .ilike("username", username)
             .execute()
         )
 
