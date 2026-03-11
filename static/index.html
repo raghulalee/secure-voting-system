@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KITS Secure Voting System</title>
+    <meta name="description" content="Secure Online Voting System using Multi-Database Architecture - KAMALA INSTITUTE OF TECHNOLOGY & SCIENCE">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- ═══════════ LOADING SCREEN ═══════════ -->
+    <div id="loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-icon">🗳️</div>
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Initializing Secure Voting System...</p>
+        </div>
+    </div>
+
+    <!-- ═══════════ NAVIGATION ═══════════ -->
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+            <a href="#/" class="nav-brand" onclick="navigateTo('/')">
+                <span class="brand-icon">🗳️</span>
+                <span class="brand-text">KITS <span class="brand-accent">VoteSecure</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#/" onclick="navigateTo('/')" class="nav-link" data-page="home">Home</a></li>
+                <li id="navElections" style="display:none"><a href="#/elections" onclick="navigateTo('/elections')" class="nav-link" data-page="elections">Elections</a></li>
+                <li id="navDashboard" style="display:none"><a href="#/dashboard" onclick="navigateTo('/dashboard')" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                <li id="navResults" style="display:none"><a href="#/results" onclick="navigateTo('/results')" class="nav-link" data-page="results">Results</a></li>
+                <li id="navAdmin" style="display:none"><a href="#/admin" onclick="navigateTo('/admin')" class="nav-link" data-page="admin">Admin Panel</a></li>
+                <li id="navLoginBtn"><a href="#/login" onclick="navigateTo('/login')" class="nav-link btn-nav">Login</a></li>
+                <li id="navUserMenu" style="display:none" class="user-menu-container">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <span class="user-avatar" id="userAvatar">U</span>
+                        <span class="user-name" id="userName">User</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#/dashboard" onclick="navigateTo('/dashboard')">👤 My Profile</a>
+                        <a href="#" onclick="handleLogout()">🚪 Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ═══════════ MAIN CONTENT ═══════════ -->
+    <main id="app" class="main-content">
+
+        <!-- ── HOME PAGE ── -->
+        <section id="page-home" class="page active">
+            <div class="hero">
+                <div class="hero-bg-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                </div>
+                <div class="hero-content">
+                    <div class="hero-badge">🔒 Multi-Database Architecture</div>
+                    <h1 class="hero-title">
+                        Secure Online<br>
+                        <span class="gradient-text">Voting System</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        KAMALA INSTITUTE OF TECHNOLOGY & SCIENCE (UGC Autonomous)<br>
+                        Department of Computer Science & Engineering — Batch C10
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-lg" onclick="navigateTo('/register')">
+                            Register to Vote
+                        </button>
+                        <button class="btn btn-glass btn-lg" onclick="navigateTo('/login')">
+                            Voter Login →
+                        </button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <span class="stat-number" id="statVoters">0</span>
+                            <span class="stat-label">Registered Voters</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="statElections">0</span>
+                            <span class="stat-label">Total Elections</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="statVotes">0</span>
+                            <span class="stat-label">Votes Cast</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="features-section" id="features">
+                <div class="container">
+                    <h2 class="section-title">Why Our System is <span class="gradient-text">Secure</span></h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🔐</div>
+                            <h3>End-to-End Encryption</h3>
+                            <p>Every vote is encrypted using Fernet symmetric encryption before storage, ensuring complete data protection.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🗄️</div>
+                            <h3>Multi-Database Architecture</h3>
+                            <p>Voter identity, credentials, and votes are stored in separate logical databases — preventing data correlation.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎭</div>
+                            <h3>Voter Anonymity</h3>
+                            <p>Vote tracking uses SHA-256 hashed tokens — votes cannot be traced back to individual voters.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🛡️</div>
+                            <h3>Tamper-Proof Votes</h3>
+                            <p>Each vote generates a unique cryptographic hash for integrity verification. No modification possible.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔑</div>
+                            <h3>JWT Authentication</h3>
+                            <p>Secure token-based authentication with account lockout after failed attempts.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3>Real-Time Monitoring</h3>
+                            <p>Admin dashboard with live vote tracking, security logs, and instant result calculation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="architecture-section">
+                <div class="container">
+                    <h2 class="section-title">Multi-Database <span class="gradient-text">Architecture</span></h2>
+                    <div class="arch-diagram">
+                        <div class="arch-card arch-voter">
+                            <div class="arch-icon">👤</div>
+                            <h4>Voter Registry DB</h4>
+                            <p>Personal details, eligibility status, verification</p>
+                            <span class="arch-badge">Database 1</span>
+                        </div>
+                        <div class="arch-connector">⟷</div>
+                        <div class="arch-card arch-auth">
+                            <div class="arch-icon">🔐</div>
+                            <h4>Auth Store DB</h4>
+                            <p>Credentials, session tokens, security logs</p>
+                            <span class="arch-badge">Database 2</span>
+                        </div>
+                        <div class="arch-connector">⟷</div>
+                        <div class="arch-card arch-ballot">
+                            <div class="arch-icon">🗳️</div>
+                            <h4>Ballot Box DB</h4>
+                            <p>Encrypted votes, anonymous tracking, results</p>
+                            <span class="arch-badge">Database 3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── LOGIN PAGE ── -->
+        <section id="page-login" class="page">
+            <div class="auth-container">
+                <div class="auth-card glass-card">
+                    <div class="auth-header">
+                        <div class="auth-icon">🗳️</div>
+                        <h2>Voter Login</h2>
+                        <p>Access your secure voting dashboard</p>
+                    </div>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" placeholder="Enter your username" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <div class="password-field">
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                                <button type="button" class="toggle-pass" onclick="togglePassword('loginPassword')">👁️</button>
+                            </div>
+                        </div>
+                        <div id="loginError" class="form-error"></div>
+                        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-loader" style="display:none"></span>
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Don't have an account? <a href="#/register" onclick="navigateTo('/register')">Register here</a></p>
+                        <p class="auth-admin-link"><a href="#/admin-login" onclick="navigateTo('/admin-login')">Admin Login →</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── REGISTER PAGE ── -->
+        <section id="page-register" class="page">
+            <div class="auth-container register-container">
+                <div class="auth-card glass-card register-card">
+                    <div class="auth-header">
+                        <div class="auth-icon">📝</div>
+                        <h2>Voter Registration</h2>
+                        <p>Create your secure voting account</p>
+                    </div>
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regName">Full Name *</label>
+                                <input type="text" id="regName" placeholder="Your full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regVoterId">Voter ID *</label>
+                                <input type="text" id="regVoterId" placeholder="e.g., VTR2024001" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regEmail">Email *</label>
+                                <input type="email" id="regEmail" placeholder="your@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regPhone">Phone</label>
+                                <input type="tel" id="regPhone" placeholder="+91 XXXXXXXXXX">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regDob">Date of Birth *</label>
+                                <input type="date" id="regDob" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regGender">Gender</label>
+                                <select id="regGender">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regAddress">Address</label>
+                                <textarea id="regAddress" rows="2" placeholder="Your address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="regPhoto">Profile Photo URL (Optional)</label>
+                                <input type="url" id="regPhoto" placeholder="https://example.com/voter-photo.jpg">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regDistrict">District</label>
+                                <input type="text" id="regDistrict" placeholder="e.g., Karimnagar">
+                            </div>
+                            <div class="form-group">
+                                <label for="regState">State</label>
+                                <input type="text" id="regState" value="Telangana" placeholder="State">
+                            </div>
+                        </div>
+                        <hr class="form-divider">
+                        <h3 class="form-section-title">🔐 Login Credentials</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regUsername">Username *</label>
+                                <input type="text" id="regUsername" placeholder="Choose a username" required autocomplete="username">
+                            </div>
+                            <div class="form-group">
+                                <label for="regPassword">Password *</label>
+                                <div class="password-field">
+                                    <input type="password" id="regPassword" placeholder="Min 8 characters" required minlength="8" autocomplete="new-password">
+                                    <button type="button" class="toggle-pass" onclick="togglePassword('regPassword')">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="registerError" class="form-error"></div>
+                        <div id="registerSuccess" class="form-success"></div>
+                        <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-loader" style="display:none"></span>
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Already registered? <a href="#/login" onclick="navigateTo('/login')">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ADMIN LOGIN PAGE ── -->
+        <section id="page-admin-login" class="page">
+            <div class="auth-container">
+                <div class="auth-card glass-card admin-card">
+                    <div class="auth-header">
+                        <div class="auth-icon">⚙️</div>
+                        <h2>Admin Login</h2>
+                        <p>Election Administrator Access</p>
+                    </div>
+                    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                        <div class="form-group">
+                            <label for="adminUsername">Admin Username</label>
+                            <input type="text" id="adminUsername" placeholder="Admin username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Admin Password</label>
+                            <div class="password-field">
+                                <input type="password" id="adminPassword" placeholder="Admin password" required>
+                                <button type="button" class="toggle-pass" onclick="togglePassword('adminPassword')">👁️</button>
+                            </div>
+                        </div>
+                        <div id="adminLoginError" class="form-error"></div>
+                        <button type="submit" class="btn btn-primary btn-full" id="adminLoginBtn">
+                            <span class="btn-text">Admin Sign In</span>
+                            <span class="btn-loader" style="display:none"></span>
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p><a href="#/login" onclick="navigateTo('/login')">← Back to Voter Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── VOTER DASHBOARD ── -->
+        <section id="page-dashboard" class="page">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div>
+                        <h2>Welcome, <span id="dashName" class="gradient-text">Voter</span></h2>
+                        <p class="subtitle">Your Voting Dashboard</p>
+                    </div>
+                    <div class="dash-voter-id">
+                        <span class="label">Voter ID:</span>
+                        <span id="dashVoterId" class="badge">—</span>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card glass-card">
+                        <h3>🗳️ Active Elections</h3>
+                        <div id="dashActiveElections" class="election-list">
+                            <div class="empty-state">Loading elections...</div>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-card">
+                        <h3>📋 My Voting History</h3>
+                        <div id="dashVoteHistory">
+                            <div class="empty-state">No votes cast yet</div>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-card">
+                        <h3>📊 Completed Elections</h3>
+                        <div id="dashCompletedElections">
+                            <div class="empty-state">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ELECTIONS LIST ── -->
+        <section id="page-elections" class="page">
+            <div class="container">
+                <h2 class="page-title">Available <span class="gradient-text">Elections</span></h2>
+                <div class="elections-filter">
+                    <button class="filter-btn active" onclick="filterElections('all', this)">All</button>
+                    <button class="filter-btn" onclick="filterElections('active', this)">Active</button>
+                    <button class="filter-btn" onclick="filterElections('upcoming', this)">Upcoming</button>
+                    <button class="filter-btn" onclick="filterElections('completed', this)">Completed</button>
+                </div>
+                <div id="electionsList" class="elections-grid">
+                    <div class="empty-state">Loading elections...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── VOTE PAGE ── -->
+        <section id="page-vote" class="page">
+            <div class="container">
+                <div class="vote-header">
+                    <h2 id="voteElectionTitle" class="page-title">Cast Your <span class="gradient-text">Vote</span></h2>
+                    <p id="voteElectionDesc" class="subtitle"></p>
+                </div>
+                <div id="voteAlreadyVoted" class="alert alert-info" style="display:none">
+                    ✅ You have already voted in this election. Thank you for participating!
+                </div>
+                <div id="voteCandidates" class="candidates-grid"></div>
+                <div id="voteConfirmModal" class="modal" style="display:none">
+                    <div class="modal-content glass-card">
+                        <div class="modal-icon">🗳️</div>
+                        <h3>Confirm Your Vote</h3>
+                        <p>You are voting for:</p>
+                        <div id="voteConfirmCandidate" class="confirm-candidate"></div>
+                        <p class="warning-text">⚠️ This action cannot be undone. Your vote will be encrypted and recorded permanently.</p>
+                        <div class="modal-actions">
+                            <button class="btn btn-glass" onclick="closeVoteModal()">Cancel</button>
+                            <button class="btn btn-primary" id="confirmVoteBtn" onclick="confirmVote()">
+                                <span class="btn-text">Cast My Vote</span>
+                                <span class="btn-loader" style="display:none"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="voteSuccess" class="vote-success" style="display:none">
+                    <div class="success-content glass-card">
+                        <div class="success-checkmark">
+                            <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none"/><path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+                        </div>
+                        <h2>Vote Cast Successfully!</h2>
+                        <p>Your encrypted vote has been securely recorded.</p>
+                        <div class="receipt-box">
+                            <p>Receipt: <code id="voteReceipt"></code></p>
+                            <p>Hash: <code id="voteHashDisplay"></code></p>
+                        </div>
+                        <button class="btn btn-primary" onclick="navigateTo('/dashboard')">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── RESULTS PAGE ── -->
+        <section id="page-results" class="page">
+            <div class="container">
+                <h2 class="page-title">Election <span class="gradient-text">Results</span></h2>
+                <div id="resultsList" class="results-container">
+                    <div class="empty-state">Loading results...</div>
+                </div>
+                <div id="resultDetail" class="result-detail" style="display:none">
+                    <button class="btn btn-glass btn-sm" onclick="showResultsList()">← Back to Elections</button>
+                    <h3 id="resultElectionTitle"></h3>
+                    <div class="result-grid">
+                        <div class="chart-container glass-card">
+                            <canvas id="resultChart"></canvas>
+                        </div>
+                        <div class="result-table-container glass-card">
+                            <table class="result-table">
+                                <thead>
+                                    <tr><th>Rank</th><th>Candidate</th><th>Party</th><th>Votes</th><th>%</th></tr>
+                                </thead>
+                                <tbody id="resultTableBody"></tbody>
+                            </table>
+                            <div class="result-total">
+                                Total Votes: <strong id="resultTotalVotes">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ADMIN PANEL ── -->
+        <section id="page-admin" class="page">
+            <div class="container">
+                <div class="admin-header">
+                    <h2>Admin <span class="gradient-text">Panel</span></h2>
+                    <p class="subtitle">Election Management Dashboard</p>
+                </div>
+                <div class="admin-stats" id="adminStats">
+                    <div class="admin-stat-card glass-card">
+                        <span class="stat-icon">👥</span>
+                        <span class="stat-value" id="adminTotalVoters">0</span>
+                        <span class="stat-label">Registered Voters</span>
+                    </div>
+                    <div class="admin-stat-card glass-card">
+                        <span class="stat-icon">🗳️</span>
+                        <span class="stat-value" id="adminTotalElections">0</span>
+                        <span class="stat-label">Total Elections</span>
+                    </div>
+                    <div class="admin-stat-card glass-card">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-value" id="adminActiveElections">0</span>
+                        <span class="stat-label">Active Elections</span>
+                    </div>
+                    <div class="admin-stat-card glass-card">
+                        <span class="stat-icon">📊</span>
+                        <span class="stat-value" id="adminTotalVotes">0</span>
+                        <span class="stat-label">Total Votes</span>
+                    </div>
+                </div>
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="switchAdminTab('elections', this)">🗳️ Elections</button>
+                    <button class="tab-btn" onclick="switchAdminTab('voters', this)">👥 Voters</button>
+                    <button class="tab-btn" onclick="switchAdminTab('logs', this)">📋 Security Logs</button>
+                </div>
+                <!-- Elections Tab -->
+                <div id="adminTab-elections" class="admin-tab-content active">
+                    <div class="tab-header">
+                        <h3>Election Management</h3>
+                        <button class="btn btn-primary btn-sm" onclick="showCreateElection()">+ New Election</button>
+                    </div>
+                    <div id="adminElectionsList"></div>
+                    <!-- Create Election Form -->
+                    <div id="createElectionForm" class="glass-card form-card" style="display:none">
+                        <h3>Create New Election</h3>
+                        <form onsubmit="handleCreateElection(event)">
+                            <div class="form-row">
+                                <div class="form-group"><label>Title *</label><input type="text" id="elTitle" required></div>
+                                <div class="form-group"><label>Type *</label>
+                                    <select id="elType" required>
+                                        <option value="general">General</option>
+                                        <option value="university">University</option>
+                                        <option value="organization">Organization</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group"><label>Description</label><textarea id="elDesc" rows="2"></textarea></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Start Date *</label><input type="datetime-local" id="elStart" required></div>
+                                <div class="form-group"><label>End Date *</label><input type="datetime-local" id="elEnd" required></div>
+                            </div>
+                            <div id="createElectionError" class="form-error"></div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-glass" onclick="hideCreateElection()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Election</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Candidates Modal -->
+                <div id="candidatesModal" class="modal" style="display:none">
+                    <div class="modal-content glass-card modal-lg">
+                        <div class="modal-header">
+                            <h3>Manage Candidates — <span id="candElectionTitle"></span></h3>
+                            <button class="modal-close" onclick="closeCandidatesModal()">✕</button>
+                        </div>
+                        <div id="candidatesList" class="candidates-manage-list"></div>
+                        <form onsubmit="handleAddCandidate(event)" class="add-candidate-form" style="display:flex; flex-direction:column; gap:8px;">
+                            <h4>Add Candidate</h4>
+                            <div class="form-row">
+                                <div class="form-group"><label>Name *</label><input type="text" id="candName" required></div>
+                                <div class="form-group"><label>Party</label><input type="text" id="candParty" value="Independent"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Symbol</label><input type="text" id="candSymbol" value="⚪" maxlength="4"></div>
+                                <div class="form-group"><label>Position</label><input type="number" id="candPosition" value="0"></div>
+                            </div>
+                            <div class="form-group"><label>Photo URL</label><input type="url" id="candPhoto" placeholder="https://example.com/photo.jpg"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Age</label><input type="number" id="candAge" min="18" max="120"></div>
+                                <div class="form-group"><label>Locality</label><input type="text" id="candLocality" placeholder="Home Town"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>District</label><input type="text" id="candDistrict"></div>
+                                <div class="form-group"><label>State</label><input type="text" id="candState" value="Telangana"></div>
+                            </div>
+                            <div class="form-group"><label>Campaign Timings</label><input type="text" id="candTimings" placeholder="E.g., 9AM - 5PM"></div>
+                            <div class="form-group"><label>Manifesto Summary</label><textarea id="candManifesto" rows="2"></textarea></div>
+                            <div id="addCandidateError" class="form-error"></div>
+                            <button type="submit" class="btn btn-primary btn-sm mt-3">Add Candidate</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Voters Tab -->
+                <div id="adminTab-voters" class="admin-tab-content">
+                    <h3>Registered Voters</h3>
+                    <div id="adminVotersList" class="table-container"></div>
+                </div>
+                <!-- Logs Tab -->
+                <div id="adminTab-logs" class="admin-tab-content">
+                    <h3>Security & Auth Logs</h3>
+                    <div id="adminLogsList" class="table-container"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="brand-icon">🗳️</span>
+                    <span>KITS VoteSecure</span>
+                </div>
+                <p class="footer-text">
+                    KAMALA INSTITUTE OF TECHNOLOGY & SCIENCE (UGC Autonomous)<br>
+                    Singapur, Huzurabad, Karimnagar, Telangana — 505468<br>
+                    Department of CSE — Batch C10
+                </p>
+                <p class="footer-copy">© 2026 Secure Online Voting System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══════════ TOAST NOTIFICATION ═══════════ -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ═══════════ SCRIPTS ═══════════ -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Clean Premium Antigravity 3D Tilt Effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const initTilt = () => {
+                VanillaTilt.init(document.querySelectorAll(".glass-card, .feature-card, .arch-card, .candidate-card, .btn"), {
+                    max: 4,
+                    speed: 600,
+                    glare: true,
+                    "max-glare": 0.1,
+                    scale: 1.01,
+                    easing: "cubic-bezier(.03,.98,.52,.99)"
+                });
+            };
+            initTilt();
+            setInterval(initTilt, 2000);
+        });
+    </script>
+</body>
+</html>
