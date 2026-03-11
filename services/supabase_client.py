@@ -28,7 +28,7 @@ class SupabaseClient:
 
     def get_voter_by_id(self, voter_id: str):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .select("*")
             .eq("voter_id", voter_id)
             .execute()
@@ -36,7 +36,7 @@ class SupabaseClient:
 
     def get_voter_by_email(self, email: str):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .select("*")
             .eq("email", email)
             .execute()
@@ -44,26 +44,26 @@ class SupabaseClient:
 
     def get_voter_by_uuid(self, uuid: str):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .select("*")
             .eq("id", uuid)
             .execute()
         )
 
     def create_voter(self, data: dict):
-        return self.client.table("voter_profiles").insert(data).execute()
+        return self.client.table("voters").insert(data).execute()
 
-    def update_voter(self, voter_id: str, data: dict):
+    def update_voter(self, uuid: str, data: dict):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .update(data)
-            .eq("voter_id", voter_id)
+            .eq("id", uuid)
             .execute()
         )
 
     def get_all_voters(self, limit=100, offset=0):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .select("*")
             .range(offset, offset + limit - 1)
             .order("created_at", desc=True)
@@ -72,7 +72,7 @@ class SupabaseClient:
 
     def count_voters(self):
         return (
-            self.client.table("voter_profiles")
+            self.client.table("voters")
             .select("id", count="exact")
             .execute()
         )
@@ -81,7 +81,7 @@ class SupabaseClient:
 
     def get_credentials_by_username(self, username: str):
         return (
-            self.client.table("voter_credentials")
+            self.client.table("credentials")
             .select("*")
             .eq("username", username)
             .execute()
@@ -89,18 +89,18 @@ class SupabaseClient:
 
     def get_credentials_by_profile(self, profile_id: str):
         return (
-            self.client.table("voter_credentials")
+            self.client.table("credentials")
             .select("*")
             .eq("voter_profile_id", profile_id)
             .execute()
         )
 
     def create_credentials(self, data: dict):
-        return self.client.table("voter_credentials").insert(data).execute()
+        return self.client.table("credentials").insert(data).execute()
 
     def update_credentials(self, cred_id: str, data: dict):
         return (
-            self.client.table("voter_credentials")
+            self.client.table("credentials")
             .update(data)
             .eq("id", cred_id)
             .execute()
@@ -125,7 +125,14 @@ class SupabaseClient:
             self.client.table("admin_users")
             .select("*")
             .eq("username", username)
-            .eq("is_active", True)
+            .execute()
+        )
+
+    def update_admin(self, admin_id: str, data: dict):
+        return (
+            self.client.table("admin_users")
+            .update(data)
+            .eq("id", admin_id)
             .execute()
         )
 

@@ -226,3 +226,26 @@ def dashboard_stats():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@admin_bp.route("/api/admin/profile", methods=["PUT"])
+@require_auth(role="admin")
+def update_admin_profile():
+    """Update admin profile details."""
+    try:
+        admin_id = request.user["sub"]
+        data = request.json
+        allowed = ["photo_url", "full_name", "email"]
+        update_data = {k: v for k, v in data.items() if k in allowed}
+
+        if not update_data:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        result = db.update_admin(admin_id, update_data)
+        return jsonify({
+            "message": "Admin profile updated successfully",
+            "user": result.data[0] if result.data else None
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

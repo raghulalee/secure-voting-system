@@ -143,8 +143,9 @@ function updateNavForUser() {
         userMenu.style.display = "block";
         document.getElementById("userName").textContent = currentUser.full_name || currentUser.username || "User";
         
-        // Professional Demo Voter Avatar
-        document.getElementById("userAvatar").innerHTML = `<img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&q=80" alt="Profile" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        // Dynamic User Avatar
+        const avatarUrl = currentUser.photo_url || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&q=80";
+        document.getElementById("userAvatar").innerHTML = `<img src="${esc(avatarUrl)}" alt="Profile" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid var(--accent-primary);">`;
 
         if (currentRole === "voter") {
             navElections.style.display = "block";
@@ -217,6 +218,7 @@ async function handleRegister(e) {
             state: document.getElementById("regState").value,
             username: document.getElementById("regUsername").value,
             password: document.getElementById("regPassword").value,
+            photo_url: document.getElementById("regPhoto").value || "",
         });
 
         successEl.textContent = data.message;
@@ -955,4 +957,68 @@ function showToast(message, type = "info") {
     toast.textContent = message;
     toast.className = `toast ${type} show`;
     setTimeout(() => { toast.classList.remove("show"); }, 4000);
+}
+
+// ── Profile Logic ───────────────────────────────────────────────
+function showProfile() {
+    if (!currentUser) return;
+    
+    document.getElementById("profileInfoName").textContent = currentUser.full_name || currentUser.username;
+    document.getElementById("profileInfoEmail").textContent = currentUser.email || "—";
+    document.getElementById("profileInfoVoterId").textContent = currentUser.voter_id || "—";
+    document.getElementById("profileInfoDistrict").textContent = currentUser.district || "—";
+    document.getElementById("profileInfoState").textContent = currentUser.state || "—";
+    
+    const photoUrl = currentUser.photo_url || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80";
+    document.getElementById("profileInfoPhoto").src = photoUrl;
+    document.getElementById("editProfilePhoto").value = currentUser.photo_url || "";
+    
+    // Check role for address editing
+    const addrGroup = document.getElementById("editAddressGroup");
+    if (currentRole === "voter") {
+        addrGroup.style.display = "block";
+        document.getElementById("editProfileAddress").value = currentUser.address || "";
+    } else {
+        addrGroup.style.display = "none";
+    }
+    
+    document.getElementById("profileInfoRole").textContent = currentRole.charAt(0).toUpperCase() + currentRole.slice(1);
+    
+    document.getElementById("profileModal").style.display = "flex";
+    document.getElementById("userDropdown").classList.remove("show");
+}
+
+async function handleUpdateProfile() {
+    const btn = document.getElementById("saveProfileBtn");
+    const photo = document.getElementById("editProfilePhoto").value;
+    const address = document.getElementById("editProfileAddress").value;
+    
+    setLoading(btn, true);
+    
+    try {
+        const endpoint = currentRole === "voter" ? "/api/voter/profile" : "/api/admin/profile";
+        const data = await API.put(endpoint, {
+            photo_url: photo,
+            address: currentRole === "voter" ? address : undefined
+        });
+        
+        showToast(data.message, "success");
+        
+        // Refresh local user data
+        const profileData = await API.get("/api/auth/me");
+        currentUser = profileData.user;
+        
+        // Update UI
+        updateNavForUser();
+        showProfile(); // Re-populate
+        
+    } catch (err) {
+        showToast("Error updating profile: " + err.message, "error");
+    } finally {
+        setLoading(btn, false);
+    }
+}
+
+function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
 }

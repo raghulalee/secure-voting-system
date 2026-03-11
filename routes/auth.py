@@ -176,6 +176,9 @@ def login():
                 "full_name": voter_data.get("full_name", ""),
                 "voter_id": voter_data.get("voter_id", ""),
                 "email": voter_data.get("email", ""),
+                "photo_url": voter_data.get("photo_url", ""),
+                "district": voter_data.get("district", ""),
+                "state": voter_data.get("state", ""),
                 "is_verified": voter_data.get("is_verified", False),
             }
         }), 200
@@ -225,6 +228,29 @@ def admin_login():
         return jsonify({"error": str(e)}), 500
 
 
+@auth_bp.route("/api/voter/profile", methods=["PUT"])
+@require_auth(role="voter")
+def update_profile():
+    """Update voter profile."""
+    try:
+        user_uuid = request.user["sub"]
+        data = request.json
+        allowed = ["photo_url", "address", "phone"]
+        update_data = {k: v for k, v in data.items() if k in allowed}
+
+        if not update_data:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        result = db.update_voter(user_uuid, update_data)
+        return jsonify({
+            "message": "Profile updated successfully",
+            "user": result.data[0] if result.data else None
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @auth_bp.route("/api/auth/me", methods=["GET"])
 @require_auth()
 def get_me():
@@ -241,10 +267,15 @@ def get_me():
             profile.pop("id", None)
             return jsonify({"user": profile, "role": role}), 200
         else:
+            # Get admin details
+            result = db.client.table("admin_users").select("*").eq("id", user["sub"]).execute()
+            admin_data = result.data[0] if result.data else {}
             return jsonify({
                 "user": {
                     "id": user["sub"],
-                    "name": user.get("name", ""),
+                    "username": admin_data.get("username", ""),
+                    "full_name": admin_data.get("full_name", ""),
+                    "photo_url": admin_data.get("photo_url", ""),
                     "role": role,
                 },
                 "role": role,

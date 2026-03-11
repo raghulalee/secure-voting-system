@@ -46,7 +46,7 @@
                         <span class="user-name" id="userName">User</span>
                     </button>
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="#/dashboard" onclick="navigateTo('/dashboard')">👤 My Profile</a>
+                        <a href="javascript:void(0)" onclick="showProfile()">👤 My Profile</a>
                         <a href="#" onclick="handleLogout()">🚪 Logout</a>
                     </div>
                 </li>
@@ -570,47 +570,99 @@
 
     </main>
 
-    <!-- ═══════════ FOOTER ═══════════ -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <span class="brand-icon">🗳️</span>
-                    <span>KITS VoteSecure</span>
+        <!-- ── PROFILE MODAL ── -->
+        <div id="profileModal" class="modal" style="display:none">
+            <div class="modal-content glass-card modal-md">
+                <div class="modal-header">
+                    <h3>My <span class="gradient-text">Profile</span></h3>
+                    <button class="modal-close" onclick="closeProfileModal()">✕</button>
                 </div>
-                <p class="footer-text">
-                    KAMALA INSTITUTE OF TECHNOLOGY & SCIENCE (UGC Autonomous)<br>
-                    Singapur, Huzurabad, Karimnagar, Telangana — 505468<br>
-                    Department of CSE — Batch C10
-                </p>
-                <p class="footer-copy">© 2026 Secure Online Voting System. All rights reserved.</p>
+                <div class="profile-body">
+                    <div class="profile-header-info">
+                        <div class="profile-img-container">
+                            <img id="profileInfoPhoto" src="" alt="Profile">
+                        </div>
+                        <h2 id="profileInfoName"></h2>
+                        <span id="profileInfoRole" class="badge">Voter</span>
+                    </div>
+                    <div class="profile-details-grid">
+                        <div class="profile-detail-item">
+                            <span class="label">Voter ID</span>
+                            <span id="profileInfoVoterId" class="value"></span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="label">Email</span>
+                            <span id="profileInfoEmail" class="value"></span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="label">District</span>
+                            <span id="profileInfoDistrict" class="value"></span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="label">State</span>
+                            <span id="profileInfoState" class="value"></span>
+                        </div>
+                    </div>
+
+                    <div id="profileEditFields" class="profile-edit-section" style="margin-top: 24px;">
+                        <div class="form-group">
+                            <label>Update Profile Photo URL</label>
+                            <input type="text" id="editProfilePhoto" class="form-input" placeholder="https://example.com/photo.jpg">
+                        </div>
+                        <div id="editAddressGroup" class="form-group">
+                            <label>Update Home Address</label>
+                            <textarea id="editProfileAddress" class="form-input" rows="2" placeholder="Street, Building, etc."></textarea>
+                        </div>
+                        <button id="saveProfileBtn" class="btn btn-primary btn-block" onclick="handleUpdateProfile()">
+                            <span class="btn-text">Save Changes</span>
+                            <span class="btn-loader" style="display:none"></span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
 
-    <!-- ═══════════ TOAST NOTIFICATION ═══════════ -->
-    <div id="toast" class="toast"></div>
+        <!-- ═══════════ FOOTER ═══════════ -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <span class="brand-icon">🗳️</span>
+                        <span>KITS VoteSecure</span>
+                    </div>
+                    <p class="footer-text">
+                        KAMALA INSTITUTE OF TECHNOLOGY & SCIENCE (UGC Autonomous)<br>
+                        Singapur, Huzurabad, Karimnagar, Telangana — 505468<br>
+                        Department of CSE — Batch C10
+                    </p>
+                    <p class="footer-copy">© 2026 Secure Online Voting System. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
 
-    <!-- ═══════════ SCRIPTS ═══════════ -->
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        // Clean Premium Antigravity 3D Tilt Effect
-        document.addEventListener('DOMContentLoaded', () => {
-            const initTilt = () => {
-                VanillaTilt.init(document.querySelectorAll(".glass-card, .feature-card, .arch-card, .candidate-card, .btn"), {
-                    max: 4,
-                    speed: 600,
-                    glare: true,
-                    "max-glare": 0.1,
-                    scale: 1.01,
-                    easing: "cubic-bezier(.03,.98,.52,.99)"
-                });
-            };
-            initTilt();
-            setInterval(initTilt, 2000);
-        });
-    </script>
-</body>
+        <!-- ═══════════ TOAST NOTIFICATION ═══════════ -->
+        <div id="toast" class="toast"></div>
+
+        <!-- ═══════════ SCRIPTS ═══════════ -->
+        <script src="js/config.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            // Clean Premium Antigravity 3D Tilt Effect
+            document.addEventListener('DOMContentLoaded', () => {
+                const initTilt = () => {
+                    VanillaTilt.init(document.querySelectorAll(".glass-card, .feature-card, .arch-card, .candidate-card, .btn"), {
+                        max: 4,
+                        speed: 600,
+                        glare: true,
+                        "max-glare": 0.1,
+                        scale: 1.01,
+                        easing: "cubic-bezier(.03,.98,.52,.99)"
+                    });
+                };
+                initTilt();
+                setInterval(initTilt, 2000);
+            });
+        </script>
+    </body>
 </html>
