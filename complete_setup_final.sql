@@ -183,4 +183,29 @@ DELETE FROM vote_tracking WHERE election_id = 'd3e01234-5678-4a12-8d34-ef56ba789
 INSERT INTO vote_tracking (election_id, voter_hash)
 SELECT 'd3e01234-5678-4a12-8d34-ef56ba789012', md5(random()::text) FROM generate_series(1, 850);
 
+-- ---------------------------------------------------------
+-- 5. INSERT DEMO VOTER (Username: voter, Password: voter)
+-- ---------------------------------------------------------
+
+-- Create a fixed UUID for the demo voter
+-- Insert Voter Profile
+INSERT INTO voters (id, full_name, voter_id, email, district, state, photo_url)
+VALUES (
+    'v0t3r111-1111-4111-8111-111111111111',
+    'Demo Voter (Student)',
+    'VTR001',
+    'voter@kitssvoting.edu.in',
+    'Karimnagar',
+    'Telangana',
+    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80'
+) ON CONFLICT (voter_id) DO NOTHING;
+
+-- Insert Credentials for the voter
+INSERT INTO credentials (voter_profile_id, username, password_hash)
+VALUES (
+    'v0t3r111-1111-4111-8111-111111111111',
+    'voter',
+    '$2b$12$fBClN9oAHL4fAwk6VrzlnuGfKVHWqTAQiWL7WWf5hnToq4UFbkCGe' -- password: voter
+) ON CONFLICT (username) DO NOTHING;
+
 -- COMPLETE!
