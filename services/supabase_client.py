@@ -82,6 +82,22 @@ class SupabaseClient:
             .execute()
         )
 
+    def count_voted_voters(self):
+        return (
+            self.client.table("voters")
+            .select("id", count="exact")
+            .eq("has_voted", True)
+            .execute()
+        )
+
+    def count_non_voted_voters(self):
+        return (
+            self.client.table("voters")
+            .select("id", count="exact")
+            .eq("has_voted", False)
+            .execute()
+        )
+
     # ── Authentication Database ──────────────────────────────────────
 
     def get_credentials_by_username(self, username: str):

@@ -34,6 +34,7 @@ CREATE TABLE voters (
     state VARCHAR(100),
     photo_url TEXT,
     is_verified BOOLEAN DEFAULT FALSE,
+    has_voted BOOLEAN DEFAULT FALSE, -- New: for global participation stats
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

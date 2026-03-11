@@ -145,6 +145,9 @@ def cast_vote():
             "voter_hash": voter_hash,
         })
 
+        # Update voter record for global participation stats
+        db.update_voter(user["sub"], {"has_voted": True})
+
         return jsonify({
             "message": "Vote cast successfully!",
             "receipt": voter_token[:12] + "...",

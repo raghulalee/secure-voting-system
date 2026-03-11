@@ -215,9 +215,14 @@ def dashboard_stats():
             vc = db.get_vote_count(election["id"])
             total_votes += vc.count if vc.count else 0
 
+        voted_count = db.count_voted_voters()
+        non_voted_count = db.count_non_voted_voters()
+
         return jsonify({
             "stats": {
                 "total_voters": total_voters.count if total_voters.count else 0,
+                "voted_voters": voted_count.count if voted_count.count else 0,
+                "non_voted_voters": non_voted_count.count if non_voted_count.count else 0,
                 "total_elections": len(elections_data),
                 "active_elections": len(active_elections.data) if active_elections.data else 0,
                 "total_votes_cast": total_votes,

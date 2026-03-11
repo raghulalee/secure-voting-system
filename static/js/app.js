@@ -641,6 +641,8 @@ async function loadAdmin() {
         const stats = await API.get("/api/admin/dashboard");
         const s = stats.stats;
         document.getElementById("adminTotalVoters").textContent = s.total_voters;
+        document.getElementById("adminVotedVoters").textContent = s.voted_voters;
+        document.getElementById("adminNonVotedVoters").textContent = s.non_voted_voters;
         document.getElementById("adminTotalElections").textContent = s.total_elections;
         document.getElementById("adminActiveElections").textContent = s.active_elections;
         document.getElementById("adminTotalVotes").textContent = s.total_votes_cast;
