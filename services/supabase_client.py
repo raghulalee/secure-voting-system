@@ -7,7 +7,7 @@ Provides isolated access to three logical databases:
   - Ballot Box (elections, candidates, votes, vote_tracking, election_results)
 """
 
-from supabase import create_client, Client
+from supabase import create_client, Client, ClientOptions
 from config import Config
 
 
@@ -19,8 +19,13 @@ class SupabaseClient:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.client: Client = create_client(
-                Config.SUPABASE_URL, Config.SUPABASE_SERVICE_KEY
+            cls._instance.client = create_client(
+                Config.SUPABASE_URL, 
+                Config.SUPABASE_SERVICE_KEY,
+                options=ClientOptions(
+                    postgrest_client_timeout=30,
+                    storage_client_timeout=30
+                )
             )
         return cls._instance
 
