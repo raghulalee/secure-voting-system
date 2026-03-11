@@ -206,6 +206,12 @@ async function handleRegister(e) {
     successEl.textContent = "";
 
     try {
+        const photoInput = document.getElementById("regPhoto");
+        let photo_url = "";
+        if (photoInput.files && photoInput.files[0]) {
+            photo_url = await toBase64(photoInput.files[0]);
+        }
+
         const data = await API.post("/api/auth/register", {
             full_name: document.getElementById("regName").value,
             voter_id: document.getElementById("regVoterId").value,
@@ -218,7 +224,7 @@ async function handleRegister(e) {
             state: document.getElementById("regState").value,
             username: document.getElementById("regUsername").value,
             password: document.getElementById("regPassword").value,
-            photo_url: document.getElementById("regPhoto").value || "",
+            photo_url: photo_url,
         });
 
         successEl.textContent = data.message;
@@ -809,17 +815,26 @@ async function refreshCandidates() {
 
 async function handleAddCandidate(e) {
     e.preventDefault();
+    const btn = e.submitter; // Get the button that submitted
     const errEl = document.getElementById("addCandidateError");
     errEl.textContent = "";
 
+    setLoading(btn, true);
+
     try {
+        const photoInput = document.getElementById("candPhoto");
+        let photo_url = "";
+        if (photoInput.files && photoInput.files[0]) {
+            photo_url = await toBase64(photoInput.files[0]);
+        }
+
         await API.post("/api/admin/candidates", {
             election_id: currentManageElectionId,
             name: document.getElementById("candName").value,
             party: document.getElementById("candParty").value,
             symbol: document.getElementById("candSymbol").value,
             position: parseInt(document.getElementById("candPosition").value) || 0,
-            photo_url: document.getElementById("candPhoto").value || "",
+            photo_url: photo_url,
             age: parseInt(document.getElementById("candAge").value) || null,
             locality: document.getElementById("candLocality").value || "",
             state: document.getElementById("candState").value || "",
@@ -830,10 +845,13 @@ async function handleAddCandidate(e) {
 
         showToast("Candidate added!", "success");
         document.getElementById("candName").value = "";
+        document.getElementById("candPhoto").value = ""; // Reset file input
         await refreshCandidates();
         await loadAdminElections();
     } catch (err) {
         errEl.textContent = err.message;
+    } finally {
+        setLoading(btn, false);
     }
 }
 
@@ -959,6 +977,14 @@ function showToast(message, type = "info") {
     setTimeout(() => { toast.classList.remove("show"); }, 4000);
 }
 
+// ── Helpers ──────────────────────────────────────────────────────
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 // ── Profile Logic ───────────────────────────────────────────────
 function showProfile() {
     if (!currentUser) return;
@@ -971,7 +997,9 @@ function showProfile() {
     
     const photoUrl = currentUser.photo_url || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80";
     document.getElementById("profileInfoPhoto").src = photoUrl;
-    document.getElementById("editProfilePhoto").value = currentUser.photo_url || "";
+    
+    // Reset file input (can't set value of file input)
+    document.getElementById("editProfilePhoto").value = "";
     
     // Check role for address editing
     const addrGroup = document.getElementById("editAddressGroup");
@@ -990,15 +1018,22 @@ function showProfile() {
 
 async function handleUpdateProfile() {
     const btn = document.getElementById("saveProfileBtn");
-    const photo = document.getElementById("editProfilePhoto").value;
+    const photoInput = document.getElementById("editProfilePhoto");
     const address = document.getElementById("editProfileAddress").value;
     
     setLoading(btn, true);
     
     try {
+        let photo_url = currentUser.photo_url;
+        
+        // If a new file is selected, convert to Base64
+        if (photoInput.files && photoInput.files[0]) {
+            photo_url = await toBase64(photoInput.files[0]);
+        }
+
         const endpoint = currentRole === "voter" ? "/api/voter/profile" : "/api/admin/profile";
         const data = await API.put(endpoint, {
-            photo_url: photo,
+            photo_url: photo_url,
             address: currentRole === "voter" ? address : undefined
         });
         

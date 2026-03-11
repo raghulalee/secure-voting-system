@@ -250,8 +250,8 @@
                                 <textarea id="regAddress" rows="2" placeholder="Your address"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="regPhoto">Profile Photo URL (Optional)</label>
-                                <input type="url" id="regPhoto" placeholder="https://example.com/voter-photo.jpg">
+                                <label for="regPhoto">Profile Photo (Optional)</label>
+                                <input type="file" id="regPhoto" accept="image/*">
                             </div>
                         </div>
                         <div class="form-row">
@@ -539,7 +539,10 @@
                                 <div class="form-group"><label>Symbol</label><input type="text" id="candSymbol" value="⚪" maxlength="4"></div>
                                 <div class="form-group"><label>Position</label><input type="number" id="candPosition" value="0"></div>
                             </div>
-                            <div class="form-group"><label>Photo URL</label><input type="url" id="candPhoto" placeholder="https://example.com/photo.jpg"></div>
+                            <div class="form-group">
+                                <label>Candidate Photo</label>
+                                <input type="file" id="candPhoto" accept="image/*">
+                            </div>
                             <div class="form-row">
                                 <div class="form-group"><label>Age</label><input type="number" id="candAge" min="18" max="120"></div>
                                 <div class="form-group"><label>Locality</label><input type="text" id="candLocality" placeholder="Home Town"></div>
@@ -606,8 +609,8 @@
 
                     <div id="profileEditFields" class="profile-edit-section" style="margin-top: 24px;">
                         <div class="form-group">
-                            <label>Update Profile Photo URL</label>
-                            <input type="text" id="editProfilePhoto" class="form-input" placeholder="https://example.com/photo.jpg">
+                            <label>Update Profile Photo</label>
+                            <input type="file" id="editProfilePhoto" accept="image/*">
                         </div>
                         <div id="editAddressGroup" class="form-group">
                             <label>Update Home Address</label>
@@ -617,6 +620,8 @@
                             <span class="btn-text">Save Changes</span>
                             <span class="btn-loader" style="display:none"></span>
                         </button>
+                        <button class="btn btn-glass btn-block mt-3" onclick="closeProfileModal()">← Back to Dashboard</button>
+                    </div>
                     </div>
                 </div>
             </div>
