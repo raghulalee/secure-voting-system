@@ -366,7 +366,10 @@
         <!-- ── ELECTIONS LIST ── -->
         <section id="page-elections" class="page">
             <div class="container">
-                <h2 class="page-title">Available <span class="gradient-text">Elections</span></h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+                    <h2 class="page-title">Available <span class="gradient-text">Elections</span></h2>
+                    <button class="btn btn-secondary btn-sm" onclick="navigateTo('/dashboard')">Back to Dashboard</button>
+                </div>
                 <div class="elections-filter">
                     <button class="filter-btn active" onclick="filterElections('all', this)">All</button>
                     <button class="filter-btn" onclick="filterElections('active', this)">Active</button>
@@ -383,7 +386,10 @@
         <section id="page-vote" class="page">
             <div class="container">
                 <div class="vote-header">
-                    <h2 id="voteElectionTitle" class="page-title">Cast Your <span class="gradient-text">Vote</span></h2>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                        <h2 id="voteElectionTitle" class="page-title">Cast Your <span class="gradient-text">Vote</span></h2>
+                        <button class="btn btn-secondary btn-sm" onclick="navigateTo('/elections')">← Back & Exit</button>
+                    </div>
                     <p id="voteElectionDesc" class="subtitle"></p>
                 </div>
                 <div id="voteAlreadyVoted" class="alert alert-info" style="display:none">
@@ -432,7 +438,10 @@
                 </div>
                 <div id="resultDetail" class="result-detail" style="display:none">
                     <div class="result-detail-header">
-                        <button class="btn btn-glass btn-sm" onclick="showResultsList()">← Back to Elections</button>
+                        <div style="display:flex; gap:8px">
+                            <button class="btn btn-glass btn-sm" onclick="showResultsList()">← Back to List</button>
+                            <button class="btn btn-secondary btn-sm" onclick="exitResults()">🚪 Exit to Dashboard</button>
+                        </div>
                         <button class="btn btn-primary btn-sm" onclick="downloadResultPDF()">
                             <span>📥 Download PDF</span>
                         </button>
@@ -470,8 +479,13 @@
         <section id="page-admin" class="page">
             <div class="container">
                 <div class="admin-header">
-                    <h2>Admin <span class="gradient-text">Panel</span></h2>
-                    <p class="subtitle">Election Management Dashboard</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2>Admin <span class="gradient-text">Panel</span></h2>
+                            <p class="subtitle">Election Management Dashboard</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="navigateTo('/dashboard')">Back to Dashboard</button>
+                    </div>
                 </div>
                 <div class="admin-stats" id="adminStats">
                     <div class="admin-stat-card glass-card">
@@ -599,9 +613,12 @@
         <!-- ── PROFILE MODAL ── -->
         <div id="profileModal" class="modal" style="display:none">
             <div class="modal-content glass-card modal-md">
-                <div class="modal-header">
-                    <h3>My <span class="gradient-text">Profile</span></h3>
-                    <button class="modal-close" onclick="closeProfileModal()">✕</button>
+                <div class="profile-header">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2>User <span class="gradient-text">Profile</span></h2>
+                        <button class="btn btn-secondary btn-sm" onclick="navigateTo('/dashboard')">Back to Dashboard</button>
+                    </div>
+                    <p class="subtitle">View and update your identification details</p>
                 </div>
                 <div class="profile-body">
                     <div class="profile-header-info">

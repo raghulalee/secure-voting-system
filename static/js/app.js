@@ -721,28 +721,54 @@ function switchChartType(type, btn) {
 
 async function downloadResultPDF() {
     const element = document.getElementById('resultDetail');
+    const chartCanvas = document.getElementById('resultChart');
+    const chartContainer = chartCanvas.parentElement;
+    
     const opt = {
-        margin:       [15, 15, 15, 15],
+        margin:       [15, 10, 15, 10],
         filename:     `Election_Results_${selectedElectionId}.pdf`,
-        image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0e1a', letterRendering: true },
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0e1a' },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
     try {
-        showToast("🛠️ Engineering PDF report...", "info");
+        showToast("🪄 Preparing elegant PDF report...", "info");
         const btn = document.querySelector('[onclick="downloadResultPDF()"]');
         setLoading(btn, true);
+
+        // Technique: Convert Chart canvas to static image for PDF compatibility
+        const chartImage = new Image();
+        chartImage.src = chartCanvas.toDataURL('image/png');
+        chartImage.style.width = '100%';
+        chartImage.className = 'temp-pdf-img';
+        
+        // Temporarily hide canvas and show image
+        chartCanvas.style.display = 'none';
+        chartContainer.appendChild(chartImage);
+        
+        // Small delay to ensure render
+        await new Promise(r => setTimeout(r, 100));
         
         await html2pdf().set(opt).from(element).save();
         
-        showToast("✅ PDF Downloaded successfully!", "success");
+        // Cleanup
+        chartCanvas.style.display = 'block';
+        chartImage.remove();
+        
+        showToast("✅ PDF Exported successfully!", "success");
     } catch (err) {
         showToast("❌ PDF Export failed: " + err.message, "error");
+        console.error(err);
     } finally {
         const btn = document.querySelector('[onclick="downloadResultPDF()"]');
         setLoading(btn, false);
     }
+}
+
+function exitResults() {
+    navigateTo('/dashboard');
+    showResultsList(); // Reset state for next time
 }
 
 function showResultsList() {
