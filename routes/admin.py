@@ -121,21 +121,24 @@ def add_candidate():
         candidate_data = {
             "election_id": data["election_id"],
             "name": data["name"],
-            "party": data.get("party", "Independent"),
-            "symbol": data.get("symbol", "⚪"),
+            "party": data.get("party", ""),
+            "symbol": data.get("symbol", ""),
+            "photo_url": data.get("photo_url", ""),
             "manifesto": data.get("manifesto", ""),
             "position": data.get("position", 0),
-            "photo_url": data.get("photo_url", ""),
             "age": data.get("age"),
             "locality": data.get("locality", ""),
-            "state": data.get("state", ""),
-            "district": data.get("district", ""),
             "timings": data.get("timings", ""),
+            "district": data.get("district", ""),
+            "state": data.get("state", ""),
         }
 
         result = db.add_candidate(candidate_data)
+        if not result.data:
+            return jsonify({"error": "Failed to add candidate"}), 500
+
         return jsonify({
-            "message": "Candidate added",
+            "message": "Candidate added successfully",
             "candidate": result.data[0],
         }), 201
 

@@ -26,30 +26,7 @@ def get_profile():
         return jsonify({"error": str(e)}), 500
 
 
-@voter_bp.route("/api/voter/profile", methods=["PUT"])
-@require_auth(role="voter")
-def update_profile():
-    """Update voter profile (limited fields)."""
-    try:
-        user = request.user
-        data = request.json
 
-        # Only allow updating certain fields
-        allowed = ["phone", "address", "district"]
-        update_data = {k: v for k, v in data.items() if k in allowed}
-
-        if not update_data:
-            return jsonify({"error": "No valid fields to update"}), 400
-
-        voter = db.get_voter_by_uuid(user["sub"])
-        if not voter.data:
-            return jsonify({"error": "Profile not found"}), 404
-
-        result = db.update_voter(voter.data[0]["voter_id"], update_data)
-        return jsonify({"message": "Profile updated", "profile": result.data[0]}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 @voter_bp.route("/api/voter/voting-status/<election_id>", methods=["GET"])

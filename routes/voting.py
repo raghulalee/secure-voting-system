@@ -137,16 +137,26 @@ def cast_vote():
             "vote_hash": vote_hash,
             "voter_token": voter_token,
         }
-        db.cast_vote(vote_data)
+        res_cast = db.cast_vote(vote_data)
+        if not res_cast.data:
+            # Check for error message
+            err_msg = res_cast.error.get("message") if hasattr(res_cast, "error") and res_cast.error else "Failed to record vote in ballot box"
+            return jsonify({"error": err_msg}), 500
 
         # Track that this voter has voted (anonymous hash only)
-        db.track_vote({
+        res_track = db.track_vote({
             "election_id": election_id,
             "voter_hash": voter_hash,
         })
+        if not res_track.data:
+            return jsonify({"error": "Failed to update voter participation tracking"}), 500
 
         # Update voter record for global participation stats
-        db.update_voter(user["sub"], {"has_voted": True})
+        res_voter = db.update_voter(user["sub"], {"has_voted": True})
+        if not res_voter.data:
+            # We don't necessarily fail the whole vote if just the stat update failed, 
+            # but it is good to know.
+            print(f"Warning: Failed to update global participation flag for voter {user['sub']}")
 
         return jsonify({
             "message": "Vote cast successfully!",

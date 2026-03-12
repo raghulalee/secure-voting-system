@@ -9,7 +9,9 @@ let currentRole = null;  // 'voter' | 'admin' | 'super_admin'
 let selectedCandidateId = null;
 let selectedElectionId = null;
 let resultChart = null;
+let currentResultData = null; // Store for switching chart types
 let allElections = [];
+let currentChartType = 'doughnut';
 
 // ── Init ────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -368,13 +370,43 @@ async function loadDashboard() {
 
 // ── Elections ───────────────────────────────────────────────────
 async function loadElections() {
+    const container = document.getElementById("electionsList");
+    container.innerHTML = renderSkeleton('card', 3);
+    
     try {
         const data = await API.get("/api/vote/elections");
         allElections = data.elections || [];
         renderElections(allElections);
     } catch (err) {
-        document.getElementById("electionsList").innerHTML = `<div class="empty-state">Error: ${esc(err.message)}</div>`;
+        container.innerHTML = `<div class="empty-state">Error: ${esc(err.message)}</div>`;
     }
+}
+
+function renderSkeleton(type, count = 3) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        if (type === 'card') {
+            html += `
+                <div class="glass-card skeleton-card" style="padding:24px">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width:80%"></div>
+                    <div style="display:flex; gap:10px; margin-top:20px">
+                        <div class="skeleton" style="height:32px; width:100px; border-radius:20px"></div>
+                        <div class="skeleton" style="height:32px; width:100px; border-radius:20px"></div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'list') {
+            html += `
+                <div style="padding:16px; border-bottom:1px solid var(--border-glass)">
+                    <div class="skeleton skeleton-text" style="width:40%"></div>
+                    <div class="skeleton skeleton-text" style="width:70%"></div>
+                </div>
+            `;
+        }
+    }
+    return html;
 }
 
 function renderElections(elections) {
@@ -540,11 +572,13 @@ async function confirmVote() {
 
 // ── Results ─────────────────────────────────────────────────────
 async function loadResults() {
+    const container = document.getElementById("resultsList");
+    container.innerHTML = renderSkeleton('card', 3);
+    
     try {
         const data = await API.get("/api/vote/elections");
         const completed = (data.elections || []).filter(e => e.status === "completed");
 
-        const container = document.getElementById("resultsList");
         document.getElementById("resultDetail").style.display = "none";
         container.style.display = "grid";
 
@@ -575,57 +609,139 @@ async function loadResults() {
 async function viewResult(electionId) {
     try {
         const data = await API.get(`/api/results/${electionId}`);
-        const results = data.results || [];
-        const election = data.election;
-
+        currentResultData = data; // Save for toggling
+        
+        renderResultView();
+        
         document.getElementById("resultsList").style.display = "none";
         document.getElementById("resultDetail").style.display = "block";
-        document.getElementById("resultElectionTitle").textContent = election.title;
-        document.getElementById("resultTotalVotes").textContent = data.total_votes;
-
-        // Table
-        const tbody = document.getElementById("resultTableBody");
-        tbody.innerHTML = results.map((r, i) => `
-            <tr${r.is_winner ? ' style="color: var(--accent-emerald); font-weight: 600"' : ''}>
-                <td>${i + 1}${r.is_winner ? " 🏆" : ""}</td>
-                <td>${esc(r.candidates?.name || "Unknown")}</td>
-                <td>${esc(r.candidates?.party || "—")}</td>
-                <td>${r.vote_count}</td>
-                <td>${r.percentage}%</td>
-            </tr>
-        `).join("");
-
-        // Chart
-        if (resultChart) resultChart.destroy();
-        const ctx = document.getElementById("resultChart").getContext("2d");
-        const colors = [
-            "#6366f1", "#8b5cf6", "#10b981", "#f59e0b", "#f43f5e",
-            "#06b6d4", "#ec4899", "#14b8a6", "#f97316", "#84cc16"
-        ];
-        resultChart = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: results.map(r => r.candidates?.name || "Unknown"),
-                datasets: [{
-                    data: results.map(r => r.vote_count),
-                    backgroundColor: colors.slice(0, results.length),
-                    borderWidth: 0,
-                    hoverOffset: 8,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: "bottom",
-                        labels: { color: "#94a3b8", padding: 16, font: { size: 13 } }
-                    }
-                }
-            }
-        });
-
     } catch (err) {
         showToast("Error loading results: " + err.message, "error");
+    }
+}
+
+function renderResultView() {
+    if (!currentResultData) return;
+    const { results, election } = currentResultData;
+    
+    document.getElementById("resultElectionTitle").textContent = election.title;
+    
+    // Table
+    const tableBody = document.getElementById("resultTableBody");
+    tableBody.innerHTML = results.map((r, i) => `
+        <tr${r.is_winner ? ' style="background: rgba(16, 185, 129, 0.05)"' : ''}>
+            <td style="font-weight: 700; color: var(--text-muted)">#${i + 1}</td>
+            <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                    ${r.candidates?.photo_url ? `<img src="${r.candidates.photo_url}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border: 2px solid var(--border-glass)">` : `<span style="font-size:24px">${r.candidates?.symbol || '⚪'}</span>`}
+                    <div style="display:flex;flex-direction:column">
+                        <span style="font-weight: 600; color: var(--text-primary)">${esc(r.candidates?.name || "Unknown")}</span>
+                        <span style="font-size: 11px; color: var(--text-muted)">${esc(r.candidates?.party || 'Independent')}</span>
+                    </div>
+                </div>
+            </td>
+            <td>${esc(r.candidates?.party || 'Independent')}</td>
+            <td><strong style="color: var(--accent-primary)">${r.vote_count}</strong></td>
+            <td>
+                <div style="display:flex; align-items:center; gap:10px">
+                    <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden">
+                        <div style="width:${r.percentage}%; height:100%; background:var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary)"></div>
+                    </div>
+                    <span style="font-size:12px; font-weight:600; min-width:40px">${r.percentage}%</span>
+                </div>
+            </td>
+        </tr>
+    `).join("");
+
+    document.getElementById("resultTotalVotes").textContent = currentResultData.total_votes || 0;
+
+    // Chart
+    updateChart(results);
+}
+
+function updateChart(results) {
+    const ctx = document.getElementById("resultChart").getContext("2d");
+    if (resultChart) resultChart.destroy();
+
+    const labels = results.map(r => r.candidates?.name || "Unknown");
+    const votes = results.map(r => r.vote_count);
+    const colors = [
+        '#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#f43f5e', 
+        '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#84cc16'
+    ];
+
+    resultChart = new Chart(ctx, {
+        type: currentChartType,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votes',
+                data: votes,
+                backgroundColor: colors.slice(0, results.length),
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 2,
+                borderRadius: currentChartType === 'bar' ? 6 : 0,
+                hoverOffset: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1000, easing: 'easeOutQuart' },
+            plugins: {
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        color: '#94a3b8', 
+                        padding: 20,
+                        font: { family: 'Inter', size: 12 } 
+                    } 
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: currentChartType === 'bar' ? {
+                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            } : {}
+        }
+    });
+}
+
+function switchChartType(type, btn) {
+    currentChartType = type;
+    document.querySelectorAll(".chart-toggle-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    if (currentResultData) updateChart(currentResultData.results);
+}
+
+async function downloadResultPDF() {
+    const element = document.getElementById('resultDetail');
+    const opt = {
+        margin:       [15, 15, 15, 15],
+        filename:     `Election_Results_${selectedElectionId}.pdf`,
+        image:        { type: 'jpeg', quality: 1.0 },
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0e1a', letterRendering: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    try {
+        showToast("🛠️ Engineering PDF report...", "info");
+        const btn = document.querySelector('[onclick="downloadResultPDF()"]');
+        setLoading(btn, true);
+        
+        await html2pdf().set(opt).from(element).save();
+        
+        showToast("✅ PDF Downloaded successfully!", "success");
+    } catch (err) {
+        showToast("❌ PDF Export failed: " + err.message, "error");
+    } finally {
+        const btn = document.querySelector('[onclick="downloadResultPDF()"]');
+        setLoading(btn, false);
     }
 }
 

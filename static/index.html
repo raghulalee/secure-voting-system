@@ -431,14 +431,27 @@
                     <div class="empty-state">Loading results...</div>
                 </div>
                 <div id="resultDetail" class="result-detail" style="display:none">
-                    <button class="btn btn-glass btn-sm" onclick="showResultsList()">← Back to Elections</button>
-                    <h3 id="resultElectionTitle"></h3>
+                    <div class="result-detail-header">
+                        <button class="btn btn-glass btn-sm" onclick="showResultsList()">← Back to Elections</button>
+                        <button class="btn btn-primary btn-sm" onclick="downloadResultPDF()">
+                            <span>📥 Download PDF</span>
+                        </button>
+                    </div>
+                    
+                    <div class="result-main-header">
+                        <h3 id="resultElectionTitle"></h3>
+                        <div class="chart-toggles">
+                            <button class="chart-toggle-btn active" onclick="switchChartType('doughnut', this)">🍩 Pie</button>
+                            <button class="chart-toggle-btn" onclick="switchChartType('bar', this)">📊 Bar</button>
+                        </div>
+                    </div>
+
                     <div class="result-grid">
                         <div class="chart-container glass-card">
                             <canvas id="resultChart"></canvas>
                         </div>
                         <div class="result-table-container glass-card">
-                            <table class="result-table">
+                            <table class="result-table" id="pdfResultsTable">
                                 <thead>
                                     <tr><th>Rank</th><th>Candidate</th><th>Party</th><th>Votes</th><th>%</th></tr>
                                 </thead>
@@ -659,6 +672,7 @@
         <div id="toast" class="toast"></div>
 
         <!-- ═══════════ SCRIPTS ═══════════ -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script src="js/config.js"></script>
         <script src="js/api.js"></script>
         <script src="js/app.js"></script>
