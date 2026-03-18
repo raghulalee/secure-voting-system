@@ -284,7 +284,13 @@ async function loadPageData(page) {
             case "dashboard": await loadDashboard(); break;
             case "elections": await loadElections(); break;
             case "vote": await loadVotePage(); break;
-            case "results": await loadResults(); break;
+            case "results": 
+                if (window.location.hash.includes("/results/")) {
+                    await viewResult(window.location.hash.split("/results/")[1], true);
+                } else {
+                    await loadResults(); 
+                }
+                break;
             case "admin": await loadAdmin(); break;
         }
     } catch (err) {
@@ -606,7 +612,11 @@ async function loadResults() {
     }
 }
 
-async function viewResult(electionId) {
+async function viewResult(electionId, fromRouter = false) {
+    if (!fromRouter && window.location.hash !== `#/results/${electionId}`) {
+        navigateTo(`/results/${electionId}`);
+        return; // Let the router handle the rest
+    }
     try {
         const data = await API.get(`/api/results/${electionId}`);
         currentResultData = data; // Save for toggling
@@ -726,7 +736,7 @@ async function downloadResultPDF() {
     
     const opt = {
         margin:       [15, 10, 15, 10],
-        filename:     `Election_Results_${selectedElectionId}.pdf`,
+        filename:     `Election_Results_${currentResultData ? currentResultData.election.id : 'export'}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0e1a' },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -747,14 +757,22 @@ async function downloadResultPDF() {
         chartCanvas.style.display = 'none';
         chartContainer.appendChild(chartImage);
         
+        // Hide the buttons so they don't appear in the PDF
+        const headerButtons = element.querySelector('.result-detail-header');
+        if(headerButtons) headerButtons.style.display = 'none';
+        const chartToggles = element.querySelector('.chart-toggles');
+        if(chartToggles) chartToggles.style.display = 'none';
+        
         // Small delay to ensure render
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 150));
         
         await html2pdf().set(opt).from(element).save();
         
         // Cleanup
         chartCanvas.style.display = 'block';
         chartImage.remove();
+        if(headerButtons) headerButtons.style.display = 'flex';
+        if(chartToggles) chartToggles.style.display = 'flex';
         
         showToast("✅ PDF Exported successfully!", "success");
     } catch (err) {
@@ -762,7 +780,17 @@ async function downloadResultPDF() {
         console.error(err);
     } finally {
         const btn = document.querySelector('[onclick="downloadResultPDF()"]');
-        setLoading(btn, false);
+        if (btn) setLoading(btn, false);
+        // Ensure UI is restored on error
+        const element = document.getElementById('resultDetail');
+        const headerButtons = element.querySelector('.result-detail-header');
+        if(headerButtons) headerButtons.style.display = 'flex';
+        const chartToggles = element.querySelector('.chart-toggles');
+        if(chartToggles) chartToggles.style.display = 'flex';
+        const chartCanvas = document.getElementById('resultChart');
+        if(chartCanvas) chartCanvas.style.display = 'block';
+        const tempImages = document.querySelectorAll('.temp-pdf-img');
+        tempImages.forEach(img => img.remove());
     }
 }
 
